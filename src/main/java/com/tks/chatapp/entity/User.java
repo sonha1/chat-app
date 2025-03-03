@@ -2,13 +2,15 @@ package com.tks.chatapp.entity;
 
 import com.tks.chatapp.enums.UserGender;
 import com.tks.chatapp.enums.UserStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
+@Data
+@Entity
+@Table(name = "user")
 public class User extends BaseEntity {
 
     @Column(name = "username")

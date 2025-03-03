@@ -24,7 +24,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ErrorDetails body  =  new ErrorDetails(
                 String.valueOf(HttpStatus.UNAUTHORIZED.value()),
-                Const.MessageCode.TOKEN_INVALID,
+                Const.ERROR_MESSAGE.TOKEN_INVALID,
                 request.getRequestURL().toString()
         );
         final ObjectMapper mapper = new ObjectMapper();
