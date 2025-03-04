@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +27,12 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -49,6 +51,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.error("Jwt token is expired");
             }
         }
+        getTokenAndValidate(username, request);
+
+        filterChain.doFilter(request, response);
+
     }
 
     private void getTokenAndValidate(String username, HttpServletRequest request) {

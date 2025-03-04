@@ -21,7 +21,7 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.secretRF}")
+    @Value("${jwt.refreshSecret}")
     private String secretRF;
 
     public String getUsernameFormToken(String token) {
