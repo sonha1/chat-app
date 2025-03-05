@@ -1,6 +1,7 @@
 package com.tks.chatapp.entity;
 
 import com.tks.chatapp.enums.UserGender;
+import com.tks.chatapp.enums.UserRole;
 import com.tks.chatapp.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -42,4 +43,8 @@ public class User extends BaseEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private UserStatus  status;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 }

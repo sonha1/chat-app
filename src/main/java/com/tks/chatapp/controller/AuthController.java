@@ -8,10 +8,12 @@ import com.tks.chatapp.exception.UnauthorizedException;
 import com.tks.chatapp.model.ResponseWrapper;
 import com.tks.chatapp.repository.UserRepository;
 import com.tks.chatapp.request.auth.LoginRequest;
+import com.tks.chatapp.request.auth.RegisterRequest;
 import com.tks.chatapp.response.auth.JwtResponse;
 import com.tks.chatapp.service.auth.AuthService;
 import com.tks.chatapp.util.DataUtils;
 import com.tks.chatapp.util.JwtTokenUtil;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +44,8 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthService authService;
 
 
     @PostMapping("/login")
@@ -77,6 +81,16 @@ public class AuthController {
         }catch (Exception e) {
             throw new UnauthorizedException(Const.ERROR_MESSAGE.USER_OR_PASS_INCORRECT);
         }
+    }
+
+
+    @PostMapping("/register")
+    public ResponseEntity<ResponseWrapper> register(
+            @RequestBody RegisterRequest request
+    ){
+        return ResponseEntity.ok(new ResponseWrapper(
+                authService.register(request)
+        ));
     }
 
 }

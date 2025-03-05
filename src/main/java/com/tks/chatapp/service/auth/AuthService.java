@@ -3,25 +3,20 @@ package com.tks.chatapp.service.auth;
 import com.tks.chatapp.common.Const;
 import com.tks.chatapp.dto.auth.UserPrincipal;
 import com.tks.chatapp.entity.User;
-import com.tks.chatapp.exception.AccountDisableException;
-import com.tks.chatapp.exception.UnauthorizedException;
+import com.tks.chatapp.enums.UserRole;
+import com.tks.chatapp.enums.UserStatus;
 import com.tks.chatapp.repository.UserRepository;
-import com.tks.chatapp.request.auth.LoginRequest;
-import com.tks.chatapp.response.auth.JwtResponse;
+import com.tks.chatapp.request.auth.RegisterRequest;
 import com.tks.chatapp.util.DataUtils;
-import com.tks.chatapp.util.JwtTokenUtil;
+import com.tks.chatapp.util.ValidateUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -48,6 +43,43 @@ public class AuthService implements UserDetailsService {
         return userPrincipal;
     }
 
+    public Boolean register(RegisterRequest request) {
+        validateRequestRequest(request);
 
+        Optional<User> userOtp = userRepository.findByUsername(request.getUsername());
+        if (userOtp.isPresent()) {
+            throw new IllegalArgumentException("Username is already in use");
+        }
+
+        userOtp = userRepository.findByEmail(request.getEmail());
+        if (userOtp.isPresent()) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+
+        userOtp = userRepository.findByPhone(request.getPhone());
+        if (userOtp.isPresent()) {
+            throw new IllegalArgumentException("Phone is already in use");
+        }
+
+        User user = new User();
+        BeanUtils.copyProperties(request, user);
+        user.setStatus(UserStatus.ACTIVE); // TODO: xử lý send email cho việc kích hoặc tài khoản
+        user.setRole(UserRole.USER);
+        userRepository.save(user);
+        return null;
+    }
+
+    private void validateRequestRequest(RegisterRequest request) {
+        if (request == null
+                || DataUtils.isNullOrEmpty(request.getUsername())
+                || DataUtils.isNullOrEmpty(request.getPassword())
+                || DataUtils.isNullOrEmpty(request.getEmail())
+        ) {
+            throw new IllegalArgumentException(Const.ERROR_MESSAGE.TOKEN_INVALID);
+        }
+
+        Assert.isTrue(ValidateUtil.regexValidation(request.getEmail(), Const.regexEmail), Const.ERROR_MESSAGE.EMAIL_INCORRECT);
+        Assert.isTrue(ValidateUtil.regexValidation(request.getPhone(), Const.regexPhone), Const.ERROR_MESSAGE.PHONE_NUMBER_INCORRECT);
+    }
 
 }
